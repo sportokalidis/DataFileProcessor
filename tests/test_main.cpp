@@ -13,30 +13,30 @@ class FileHandlerTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // Create test data files
-        std::ofstream jsonFile("../data/TestData.json");
+        std::ofstream jsonFile("../data/GoogleTestData.json");
         jsonFile << R"([{"id": 123646, "value": 10}, {"id": 233646, "value": 20}])";
         jsonFile.close();
 
-        std::ofstream csvFile("../data/TestData.csv");
+        std::ofstream csvFile("../data/GoogleTestData.csv");
         csvFile << "id,value\n12335,10\n43452,20\n";
         csvFile.close();
     }
 
     void TearDown() override {
         // Clean up test data files
-        std::remove("../data/TestData.json");
-        std::remove("../data/TestData.csv");
+        std::remove("../data/GoogleTestData.json");
+        std::remove("../data/GoogleTestData.csv");
     }
 };
 
 TEST_F(FileHandlerTest, JsonFileHandlerProcess) {
     FileHandlerCreator* creator = new JsonFileHandlerCreator();
-    FileHandler* handler = creator->createFileHandler("../data/TestData.json");
+    FileHandler* handler = creator->createFileHandler("../data/GoogleTestData.json");
     handler->readData();
     handler->process();
     handler->writeData();
 
-    std::ifstream file("../data/TestData.json");
+    std::ifstream file("../data/GoogleTestData.json");
     nlohmann::json jsonData;
     file >> jsonData;
     file.close();
@@ -51,12 +51,12 @@ TEST_F(FileHandlerTest, JsonFileHandlerProcess) {
 
 TEST_F(FileHandlerTest, CsvFileHandlerProcess) {
     FileHandlerCreator* creator = new CsvFileHandlerCreator();
-    FileHandler* handler = creator->createFileHandler("../data/TestData.csv");
+    FileHandler* handler = creator->createFileHandler("../data/GoogleTestData.csv");
     handler->readData();
     handler->process();
     handler->writeData();
 
-    std::ifstream file("../data/TestData.csv");
+    std::ifstream file("../data/GoogleTestData.csv");
     std::string line;
     std::vector<std::string> lines;
     while (std::getline(file, line)) {
