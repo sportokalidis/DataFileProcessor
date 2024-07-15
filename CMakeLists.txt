@@ -14,4 +14,4 @@ list(REMOVE_ITEM SOURCES "${PROJECT_SOURCE_DIR}/src/main.cpp")
 add_executable(DataProcessor ${SOURCES} src/main.cpp)
 
 # Add subdirectory for tests
-add_subdirectory(test)
+add_subdirectory(tests)
