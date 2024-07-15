@@ -4,11 +4,11 @@
 #include "FileHandler.hpp"
 #include "json.hpp"
 #include <string>
+#include <vector>
 
 class JsonFileHandler : public FileHandler {
 public:
-    JsonFileHandler(const std::string& filePath );
-
+    JsonFileHandler(const std::string& filePath);
     void readData() override;
     void writeData() override;
     void process() override;
@@ -16,6 +16,11 @@ public:
 private:
     std::string filePath;
     nlohmann::json jsonData;
+    double mean;
+    double median;
+    double std_dev;
+
+    void calculateStatistics(const std::vector<double>& values);
 };
 
 #endif // JSON_FILE_HANDLER_HPP

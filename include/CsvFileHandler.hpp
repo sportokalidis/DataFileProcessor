@@ -7,7 +7,7 @@
 
 class CsvFileHandler : public FileHandler {
 public:
-    CsvFileHandler(const std::string &filePath);
+    CsvFileHandler(const std::string& filePath);
     void readData() override;
     void writeData() override;
     void process() override;
@@ -15,8 +15,11 @@ public:
 private:
     std::string filePath;
     std::vector<std::vector<std::string>> csvData;
+    double mean;
+    double median;
+    double std_dev;
+
+    void calculateStatistics(const std::vector<double>& values);
 };
-
-
 
 #endif // CSV_FILE_HANDLER_HPP
