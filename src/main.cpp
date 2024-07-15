@@ -14,7 +14,7 @@ std::string getFileExtension(const std::string& filePath) {
 }
 
 int main() {
-    std::string filePath = "../data/TestData.csv";
+    std::string filePath = "../data/TestData.json";
     std::string extension = getFileExtension(filePath);
 
     FileHandlerCreator *creator = nullptr;
