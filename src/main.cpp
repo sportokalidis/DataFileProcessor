@@ -13,8 +13,13 @@ std::string getFileExtension(const std::string& filePath) {
     return ""; // Return empty string if no extension found
 }
 
-int main() {
-    std::string filePath = "../data/TestData.csv";
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <file_path>" << std::endl;
+        return 1;
+    }
+
+    std::string filePath = argv[1]; // "../data/TestData.csv";
     std::string extension = getFileExtension(filePath);
 
     FileHandlerCreator *creator = nullptr;
