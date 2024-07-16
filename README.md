@@ -20,7 +20,47 @@ The goal of this project is to develop a back-end system capable of interacting 
 ## Design
 
 ### Class Diagram
+```mermaid
+classDiagram
+	FileHandler <|-- CsvFileHandler
+	FileHandler <|-- JsonFileHandler
+	FileHandler : +readData()
+	FileHandler : +writeData()
+	FileHandler : +process()
+	class JsonFileHandler{
+		-filePath         
+		-jsonData         
+		-mean             		
+		-median
+		-hasInvalidData  
+		+readData()
+		+writeData() 
+		+process()
+		-calculateStats()
+	}
+	class CsvFileHandler{
+		-filePath         
+		-jsonData         
+		-mean             		
+		-median
+		-hasInvalidData  
+		+readData()
+		+writeData() 
+		+process()
+		-calculateStats()
+	}
 
+    
+	FileHandlerCreator  <|-- CsvFileHandlerCreator   
+	FileHandlerCreator  <|-- JsonFileHandlerCreator
+	FileHandlerCreator : +createFileHandler()
+	class CsvFileHandlerCreator {
+		 +createFileHandler()
+	}
+	class JsonFileHandlerCreator {
+		 +createFileHandler()
+	}
+```	
 ## Implementation Logic
 
 ### Core Components
@@ -197,6 +237,89 @@ int main(int argc, char* argv[]) {
 ```
 
 ## Building and Running the Project
+
+### Building on Linux
+1. **Clone the Repository:**
+   
+```shell
+git clone https://github.com/sportokalidis/DataFileProcessor.git
+cd DataFileProcessor
+```
+
+2. **Create a Build Directory:**
+```shell
+mkdir build
+cd build
+
+```
+3. **Run CMake:**
+```sh
+cmake ..
+
+```
+4. **Compile the Project:**
+```shell
+make
+```
+5. **Run the Executable:**
+```sh
+./DataProcessor ../data/randomData.json
+```
+
+### Building on Windows
+
+1. **Clone the Repository:**
+```shell
+git clone https://github.com/sportokalidis/DataFileProcessor.git
+cd DataFileProcessor
+```
+
+2. **Create a Build Directory:**
+```shell
+mkdir build
+cd build
+
+```
+3. **Run CMake:**
+```sh
+cmake ..
+
+```
+4. **Compile the Project:**
+```shell
+cmake --build .
+```
+or
+- Open the generated .sln file in Visual Studio.
+- Build the solution (usually Ctrl+Shift+B).
+  
+5. **Run the Executable:**
+- Navigate to the Debug directory where the executable is generated.
+- Run the executable with the required arguments:
+```shell
+DataProcessor.exe ..\data\TestData.json
+```
+
+## Unit Testing
+**Test Cases**
+
+1.**Valid JSON and CSV File Processing:**
+
+- Tests that valid JSON and CSV files are read, processed, and written correctly with the calculated statistics included.
+
+2.**Empty File Handling:**
+
+- Tests that empty JSON and CSV files are handled gracefully without crashing.
+
+3.**Invalid Format Handling:**
+
+- Tests that JSON and CSV files with invalid data (e.g., non-numeric values where numbers are expected) are handled properly, with appropriate error messages logged and no statistics calculated.
+
+
+## Conclusion
+This project fulfills the requirements by implementing a system that can read, process, and write JSON and CSV files, with the ability to easily extend support to new file types in the future. The system includes robust error handling and comprehensive unit tests to ensure reliability. The use of the factory design pattern makes the system highly extensible. The project is cross-platform, compiling and running on both Linux and Windows, and uses CMake for build management.
+
+
 
 
 
