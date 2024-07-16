@@ -95,7 +95,7 @@ classDiagram
     - The `writeData` method writes the original data along with the computed statistics back into the file. For JSON, the statistics are appended as a new entry. For CSV, the statistics are added as new rows.
 
 4. **Factory Pattern**:
-    - The `FileHandlerCreator` factory pattern allows for easy addition of new file types in the future. To add a new file type, you simply create a new file handler class that inherits from `FileHandler`, and a corresponding creator class that inherits from `FileHandlerCreator`.
+    - The `FileHandlerCreator` factory pattern allows for easy addition of new file types in the future. To add a new file type, you simply create a new file handler class that inherits from `FileHandler`, and a corresponding creator class that inherits from `FileHandlerCreator`. [Factory Design Patern](https://refactoring.guru/design-patterns/factory-method)
 
 ### `process()` Function Logic
 
@@ -140,13 +140,72 @@ void CsvFileHandler::process() {
     calculateStatistics(values);
 }
 ```
+
+### Generating Random Data Files
+To facilitate testing and demonstration, two functions have been implemented to generate random data files: `randomJsonFileGenerator()` and `randomCsvFileGenerator()`.
+
+`randomJsonFileGenerator()`
+This function generates a JSON file with a specified number of random entries. Each entry contains an `id` and a `value`.
+```cpp
+void randomJsonFileGenerator(const std::string& fileName, int numOfEntries) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> idDist(1000, 9999);
+    std::uniform_real_distribution<> valueDist(1.0, 100.0);
+
+    nlohmann::json jsonData;
+    for (int i = 0; i < numOfEntries; ++i) {
+        jsonData.push_back({
+            {"id", idDist(gen)},
+            {"value", valueDist(gen)}
+        });
+    }
+
+    std::ofstream file("../data/" + fileName);
+    if (file.is_open()) {
+        file << jsonData.dump(4);
+        file.close();
+        std::cout << "Random JSON file generated: " << fileName << std::endl;
+    } else {
+        std::cerr << "Unable to open file: " << fileName << std::endl;
+    }
+}
+
+```
+
+`randomCsvFileGenerator()`
+This function generates a CSV file with a specified number of random entries. Each entry contains an `id` and a `value`.
+```cpp
+void randomCsvFileGenerator(const std::string& fileName, int numOfEntries) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> idDist(1000, 9999);
+    std::uniform_real_distribution<> valueDist(1.0, 100.0);
+
+    std::ofstream file("../data/" + fileName);
+    if (file.is_open()) {
+        file << "id,value\n";
+        for (int i = 0; i < numOfEntries; ++i) {
+            file << idDist(gen) << "," << valueDist(gen) << "\n";
+        }
+        file.close();
+        std::cout << "Random CSV file generated: " << fileName << std::endl;
+    } else {
+        std::cerr << "Unable to open file: " << fileName << std::endl;
+    }
+}
+
+```
+These functions can be called within the `main()` function to generate random data files for testing purposes.
+
+
 ## Extending Support for a New Data File Type
 To add support for a new data file type, follow these steps:
 
 1. **Create a New File Handler Class:**
 
-- This class should inherit from the `FileHandler` base class.
-- Implement the `readData`, `writeData`, and `process` methods.
+	- This class should inherit from the `FileHandler` base class.
+	- Implement the `readData`, `writeData`, and `process` methods.
 
 Example:
 
@@ -172,8 +231,8 @@ private:
 
 2. **Create a New File Handler Creator Class:**
 
-- This class should inherit from `FileHandlerCreator`.
-- Implement the `createFileHandler` method to return an instance of the new file handler class.
+	- This class should inherit from `FileHandlerCreator`.
+	- Implement the `createFileHandler` method to return an instance of the new file handler class.
 Example:
 
 ```cpp
@@ -191,7 +250,7 @@ public:
 
 3. Modify the Main Program to Recognize the New File Type:
 
-- Update the logic in the main function to include a condition for the new file extension.
+	- Update the logic in the main function to include a condition for the new file extension.
 Example:
 ```cpp
 int main(int argc, char* argv[]) {
@@ -290,15 +349,67 @@ cmake ..
 cmake --build .
 ```
 or
-- Open the generated .sln file in Visual Studio.
-- Build the solution (usually Ctrl+Shift+B).
+
+	- Open the generated .sln file in Visual Studio.
+	- Build the solution (usually Ctrl+Shift+B).
   
 5. **Run the Executable:**
-- Navigate to the Debug directory where the executable is generated.
-- Run the executable with the required arguments:
+	- Navigate to the Debug directory where the executable is generated.
+	- Run the executable with the required arguments:
 ```shell
 DataProcessor.exe ..\data\TestData.json
 ```
+
+## File Format and Output Example
+
+***Before Processing***
+
+**JSON File Example:**
+```json
+[
+    {"id": 123646, "value": 10},
+    {"id": 233646, "value": 20},
+    {"id": 345646, "value": 30},
+    {"id": 456646, "value": 40}
+]
+```
+**CSV File Example:**
+```csv
+id,value
+12335,10
+43452,20
+56789,30
+67890,40
+```
+
+***After Processing***
+
+**JSON File Example:**
+
+
+```json
+[
+    {"id": 123646, "value": 10},
+    {"id": 233646, "value": 20},
+    {"id": 345646, "value": 30},
+    {"id": 456646, "value": 40},
+    {"mean": 25.0, "median": 25.0, "std_dev": 11.1803}
+]
+```
+**CSV File Example:**
+```csv
+id,value
+12335,10
+43452,20
+56789,30
+67890,40
+mean,25
+median,25
+std_dev,11.1803
+```
+
+
+
 
 ## Unit Testing
 **Test Cases**
@@ -316,12 +427,41 @@ DataProcessor.exe ..\data\TestData.json
 - Tests that JSON and CSV files with invalid data (e.g., non-numeric values where numbers are expected) are handled properly, with appropriate error messages logged and no statistics calculated.
 
 
+
+```scss
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 6 tests from FileHandlerTest
+[ RUN      ] FileHandlerTest.JsonFileHandlerProcess
+[       OK ] FileHandlerTest.JsonFileHandlerProcess (7 ms)
+[ RUN      ] FileHandlerTest.CsvFileHandlerProcess
+[       OK ] FileHandlerTest.CsvFileHandlerProcess (6 ms)
+[ RUN      ] FileHandlerTest.EmptyJsonFile
+JSON parse error: [json.exception.parse_error.101] parse error at line 1, column 1: attempting to parse an empty input; check that your input string or stream contains the expected JSON
+JSON data is empty.
+[       OK ] FileHandlerTest.EmptyJsonFile (5 ms)
+[ RUN      ] FileHandlerTest.EmptyCsvFile
+CSV data is empty or only contains header row.
+[       OK ] FileHandlerTest.EmptyCsvFile (2 ms)
+[ RUN      ] FileHandlerTest.InvalidJsonFormat
+Invalid value in JSON file: [json.exception.type_error.302] type must be number, but is string
+[       OK ] FileHandlerTest.InvalidJsonFormat (5 ms)
+[ RUN      ] FileHandlerTest.InvalidCsvFormat
+Invalid value in CSV file: not_a_number
+[       OK ] FileHandlerTest.InvalidCsvFormat (4 ms)
+[----------] 6 tests from FileHandlerTest (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 6 tests from 1 test suite ran. (42 ms total)
+[  PASSED  ] 6 tests.
+```
+
 ## Conclusion
 This project fulfills the requirements by implementing a system that can read, process, and write JSON and CSV files, with the ability to easily extend support to new file types in the future. The system includes robust error handling and comprehensive unit tests to ensure reliability. The use of the factory design pattern makes the system highly extensible. The project is cross-platform, compiling and running on both Linux and Windows, and uses CMake for build management.
 
 
 
-
+---
 
 ## Plan
 1. **Project Structure**
