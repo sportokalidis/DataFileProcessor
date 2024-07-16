@@ -92,12 +92,15 @@ void CsvFileHandler::process() {
 void CsvFileHandler::calculateStatistics(const std::vector<double>& values) {
     if (values.empty()) return;
 
+    // Calculate mean
     double sum = std::accumulate(values.begin(), values.end(), 0.0);
     mean = sum / values.size();
 
+    // Sort values to calculate median
     std::vector<double> sorted_values = values;
     std::sort(sorted_values.begin(), sorted_values.end());
 
+    // Calculate median
     if (sorted_values.size() % 2 == 0) {
         median = (sorted_values[sorted_values.size() / 2 - 1] + sorted_values[sorted_values.size() / 2]) / 2;
     }
@@ -105,6 +108,7 @@ void CsvFileHandler::calculateStatistics(const std::vector<double>& values) {
         median = sorted_values[sorted_values.size() / 2];
     }
 
+    // Calculate standard deviation
     double sq_sum = std::inner_product(values.begin(), values.end(), values.begin(), 0.0);
     std_dev = std::sqrt(sq_sum / values.size() - mean * mean);
 }

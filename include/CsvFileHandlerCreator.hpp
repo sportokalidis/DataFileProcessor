@@ -4,7 +4,7 @@
 #include "FileHandlerCreator.hpp"
 #include "CsvFileHandler.hpp"
 
-
+// Concrete factory class for creating CsvFileHandler objects
 class CsvFileHandlerCreator : public FileHandlerCreator {
 public: 
     FileHandler* createFileHandler(const std::string &filePath) override {
