@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 20)
 # Add include directories
 include_directories(include)
 
+# Set runtime library to Multi-threaded Debug
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+
 # Add source files, excluding main.cpp
 file(GLOB SOURCES "src/*.cpp")
 list(REMOVE_ITEM SOURCES "${PROJECT_SOURCE_DIR}/src/main.cpp")
