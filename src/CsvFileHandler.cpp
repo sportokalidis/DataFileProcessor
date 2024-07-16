@@ -50,6 +50,7 @@ void CsvFileHandler::writeData() {
             file << "median," << median << "\n";
             file << "std_dev," << std_dev << "\n";
         }
+        //file.flush();
         file.close();
     }
     else {

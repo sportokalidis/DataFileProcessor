@@ -39,12 +39,12 @@ protected:
 
     void TearDown() override {
         // Commented out to allow inspection of output files
-        // std::remove("../data/GoogleTestData.json");
-        // std::remove("../data/GoogleTestData.csv");
-        // std::remove("../data/EmptyData.json");
-        // std::remove("../data/EmptyData.csv");
-        // std::remove("../data/InvalidFormatData.json");
-        // std::remove("../data/InvalidFormatData.csv");
+        std::remove("../data/GoogleTestData.json");
+        std::remove("../data/GoogleTestData.csv");
+        std::remove("../data/EmptyData.json");
+        std::remove("../data/EmptyData.csv");
+        std::remove("../data/InvalidFormatData.json");
+        std::remove("../data/InvalidFormatData.csv");
     }
 };
 

@@ -61,13 +61,14 @@ void JsonFileHandler::process() {
     }
 
     calculateStatistics(values);
-
+    
     nlohmann::json stats = {
         {"mean", mean},
         {"median", median},
         {"std_dev", std_dev}
     };
 
+        
     jsonData.push_back(stats);
 }
 
