@@ -19,8 +19,10 @@ private:
     double mean;
     double median;
     double std_dev;
+    bool hasInvalidData;
 
     void calculateStatistics(const std::vector<double>& values);
+    void setStatisticsToZero();
 };
 
 #endif // JSON_FILE_HANDLER_HPP

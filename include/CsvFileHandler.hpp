@@ -18,6 +18,7 @@ private:
     double mean;
     double median;
     double std_dev;
+    bool hasInvalidData;
 
     void calculateStatistics(const std::vector<double>& values);
 };

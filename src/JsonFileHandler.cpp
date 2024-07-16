@@ -3,13 +3,22 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
-JsonFileHandler::JsonFileHandler(const std::string& filePath) : filePath(filePath), mean(0), median(0), std_dev(0) {}
+// Constructor initializing member variables
+JsonFileHandler::JsonFileHandler(const std::string& filePath)
+    : filePath(filePath), mean(0), median(0), std_dev(0), hasInvalidData(false) {}
 
 void JsonFileHandler::readData() {
     std::ifstream file(filePath);
     if (file.is_open()) {
-        file >> jsonData;
+        try {
+            file >> jsonData;
+        }
+        catch (const nlohmann::json::parse_error& e) {
+            std::cerr << "JSON parse error: " << e.what() << std::endl;
+            jsonData = nlohmann::json::array(); // Set to empty array on parse error
+        }
         file.close();
     }
     else {
@@ -20,7 +29,7 @@ void JsonFileHandler::readData() {
 void JsonFileHandler::writeData() {
     std::ofstream file(filePath);
     if (file.is_open()) {
-        file << jsonData.dump(4);  // Pretty print with 4 spaces
+        file << jsonData.dump(4);
         file.close();
     }
     else {
@@ -29,10 +38,28 @@ void JsonFileHandler::writeData() {
 }
 
 void JsonFileHandler::process() {
+    if (jsonData.empty()) {
+        std::cerr << "JSON data is empty.\n";
+        return;
+    }
+
     std::vector<double> values;
     for (const auto& item : jsonData) {
-        values.push_back(item["value"].get<double>());
+        try {
+            values.push_back(item.at("value").get<double>());
+        }
+        catch (const nlohmann::json::type_error& e) {
+            std::cerr << "Invalid value in JSON file: " << e.what() << "\n";
+            hasInvalidData = true;
+            return;
+        }
     }
+
+    if (values.empty()) {
+        std::cerr << "No valid data to process.\n";
+        return;
+    }
+
     calculateStatistics(values);
 
     nlohmann::json stats = {
@@ -52,6 +79,7 @@ void JsonFileHandler::calculateStatistics(const std::vector<double>& values) {
 
     std::vector<double> sorted_values = values;
     std::sort(sorted_values.begin(), sorted_values.end());
+
     if (sorted_values.size() % 2 == 0) {
         median = (sorted_values[sorted_values.size() / 2 - 1] + sorted_values[sorted_values.size() / 2]) / 2;
     }

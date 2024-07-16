@@ -4,9 +4,11 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-#include <numeric>  // Include this header for accumulate and inner_product
+#include <numeric>
 
-CsvFileHandler::CsvFileHandler(const std::string& filePath) : filePath(filePath), mean(0), median(0), std_dev(0) {}
+// Constructor initializing member variables
+CsvFileHandler::CsvFileHandler(const std::string& filePath)
+    : filePath(filePath), mean(0), median(0), std_dev(0), hasInvalidData(false) {}
 
 void CsvFileHandler::readData() {
     std::ifstream file(filePath);
@@ -27,15 +29,6 @@ void CsvFileHandler::readData() {
     else {
         std::cerr << "Unable to open file: " << filePath << std::endl;
     }
-
-    // Debug print
-    /*std::cout << "Read CSV Data:" << std::endl;
-    for (const auto& row : csvData) {
-        for (const auto& cell : row) {
-            std::cout << cell << " ";
-        }
-        std::cout << std::endl;
-    }*/
 }
 
 void CsvFileHandler::writeData() {
@@ -51,9 +44,12 @@ void CsvFileHandler::writeData() {
             }
             file << "\n";
         }
-        file << "mean," << mean << "\n";
-        file << "median," << median << "\n";
-        file << "std_dev," << std_dev << "\n";
+        // Only write statistics if there is no invalid data and valid data was processed
+        if (!hasInvalidData && csvData.size() > 1) {
+            file << "mean," << mean << "\n";
+            file << "median," << median << "\n";
+            file << "std_dev," << std_dev << "\n";
+        }
         file.close();
     }
     else {
@@ -71,15 +67,25 @@ void CsvFileHandler::process() {
     for (size_t i = 1; i < csvData.size(); ++i) { // Skip header row
         if (csvData[i].size() < 2) {
             std::cerr << "Invalid row format in CSV file.\n";
+            hasInvalidData = true;
             return;
         }
-        values.push_back(std::stod(csvData[i][1]));
+        try {
+            values.push_back(std::stod(csvData[i][1]));
+        }
+        catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid value in CSV file: " << csvData[i][1] << "\n";
+            hasInvalidData = true;
+            return;
+        }
     }
-    calculateStatistics(values);
 
-    /*csvData.push_back({ "mean", std::to_string(mean) });
-    csvData.push_back({ "median", std::to_string(median) });
-    csvData.push_back({ "std_dev", std::to_string(std_dev) });*/
+    if (values.empty()) {
+        std::cerr << "No valid data to process.\n";
+        return;
+    }
+
+    calculateStatistics(values);
 }
 
 void CsvFileHandler::calculateStatistics(const std::vector<double>& values) {
@@ -90,6 +96,7 @@ void CsvFileHandler::calculateStatistics(const std::vector<double>& values) {
 
     std::vector<double> sorted_values = values;
     std::sort(sorted_values.begin(), sorted_values.end());
+
     if (sorted_values.size() % 2 == 0) {
         median = (sorted_values[sorted_values.size() / 2 - 1] + sorted_values[sorted_values.size() / 2]) / 2;
     }
