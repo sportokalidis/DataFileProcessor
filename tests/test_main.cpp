@@ -35,6 +35,14 @@ protected:
         std::ofstream invalidCsvFile("../data/InvalidFormatData.csv");
         invalidCsvFile << "id,value\n12335,not_a_number\n43452,20\n56789,NaN\n67890,40\n";
         invalidCsvFile.close();
+
+        std::ofstream SingleEntryCsvFile("../data/SingleEntryCsvData.csv");
+        SingleEntryCsvFile << "id,value\n12345,50\n";
+        SingleEntryCsvFile.close();
+
+        std::ofstream SingleEntryJsonFile("../data/SingleEntryJsonData.json");
+        SingleEntryJsonFile << R"([{"id": 123646, "value": 10}])";
+        SingleEntryJsonFile.close();
     }
 
     void TearDown() override {
@@ -45,6 +53,8 @@ protected:
         std::remove("../data/EmptyData.csv");
         std::remove("../data/InvalidFormatData.json");
         std::remove("../data/InvalidFormatData.csv");
+        std::remove("../data/SingleEntryCsvData.csv");
+        std::remove("../data/SingleEntryJsonData.json");
     }
 };
 
@@ -69,6 +79,7 @@ TEST_F(FileHandlerTest, JsonFileHandlerProcess) {
     delete creator;
 }
 
+
 TEST_F(FileHandlerTest, CsvFileHandlerProcess) {
     FileHandlerCreator* creator = new CsvFileHandlerCreator();
     FileHandler* handler = creator->createFileHandler("../data/GoogleTestData.csv");
@@ -91,6 +102,46 @@ TEST_F(FileHandlerTest, CsvFileHandlerProcess) {
 
     delete handler;
     delete creator;
+}
+
+TEST_F(FileHandlerTest, SingleEntryCsvFile) {
+    FileHandlerCreator* creator = new CsvFileHandlerCreator();
+    FileHandler* handler = creator->createFileHandler("../data/SingleEntryCsvData.csv");
+    handler->readData();
+    handler->process();
+    handler->writeData();
+
+    std::ifstream file("../data/SingleEntryCsvData.csv");
+    std::string line;
+    std::vector<std::string> lines;
+    while (std::getline(file, line)) {
+        lines.push_back(line);
+    }
+    file.close();
+
+    EXPECT_EQ(lines.back(), "std_dev,0");
+    EXPECT_EQ(lines[lines.size() - 2], "median,50");
+    EXPECT_EQ(lines[lines.size() - 3], "mean,50");
+
+    delete handler;
+    delete creator;
+}
+
+TEST_F(FileHandlerTest, SingleEntryJsonFile) {
+    FileHandlerCreator* creator = new JsonFileHandlerCreator();
+    FileHandler* handler = creator->createFileHandler("../data/SingleEntryJsonData.json");
+    handler->readData();
+    handler->process();
+    handler->writeData();
+
+    std::ifstream file("../data/SingleEntryJsonData.json");
+    nlohmann::json jsonData;
+    file >> jsonData;
+    file.close();
+
+    EXPECT_NEAR(jsonData.back()["mean"].get<double>(), 10.0, 1e-5);
+    EXPECT_NEAR(jsonData.back()["median"].get<double>(), 10.0, 1e-5);
+    EXPECT_NEAR(jsonData.back()["std_dev"].get<double>(), 0.0, 1e-5);
 }
 
 TEST_F(FileHandlerTest, EmptyJsonFile) {
