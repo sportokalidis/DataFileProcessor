@@ -418,42 +418,50 @@ std_dev,11.1803
 
 - Tests that valid JSON and CSV files are read, processed, and written correctly with the calculated statistics included.
 
-2.**Empty File Handling:**
+2.**Single Entry File Processing:**
+
+- Tests that single-entry JSON and CSV files are read, processed, and written correctly.
+
+3.**Empty File Handling:**
 
 - Tests that empty JSON and CSV files are handled gracefully without crashing.
 
-3.**Invalid Format Handling:**
+4.**Invalid Format Handling:**
 
 - Tests that JSON and CSV files with invalid data (e.g., non-numeric values where numbers are expected) are handled properly, with appropriate error messages logged and no statistics calculated.
 
 
 
 ```scss
-[==========] Running 6 tests from 1 test suite.
+[==========] Running 8 tests from 1 test suite.
 [----------] Global test environment set-up.
-[----------] 6 tests from FileHandlerTest
+[----------] 8 tests from FileHandlerTest
 [ RUN      ] FileHandlerTest.JsonFileHandlerProcess
-[       OK ] FileHandlerTest.JsonFileHandlerProcess (7 ms)
+[       OK ] FileHandlerTest.JsonFileHandlerProcess (4 ms)
 [ RUN      ] FileHandlerTest.CsvFileHandlerProcess
-[       OK ] FileHandlerTest.CsvFileHandlerProcess (6 ms)
+[       OK ] FileHandlerTest.CsvFileHandlerProcess (3 ms)
+[ RUN      ] FileHandlerTest.SingleEntryCsvFile
+[       OK ] FileHandlerTest.SingleEntryCsvFile (4 ms)
+[ RUN      ] FileHandlerTest.SingleEntryJsonFile
+[       OK ] FileHandlerTest.SingleEntryJsonFile (3 ms)
 [ RUN      ] FileHandlerTest.EmptyJsonFile
 JSON parse error: [json.exception.parse_error.101] parse error at line 1, column 1: attempting to parse an empty input; check that your input string or stream contains the expected JSON
 JSON data is empty.
-[       OK ] FileHandlerTest.EmptyJsonFile (5 ms)
+[       OK ] FileHandlerTest.EmptyJsonFile (3 ms)
 [ RUN      ] FileHandlerTest.EmptyCsvFile
 CSV data is empty or only contains header row.
 [       OK ] FileHandlerTest.EmptyCsvFile (2 ms)
 [ RUN      ] FileHandlerTest.InvalidJsonFormat
 Invalid value in JSON file: [json.exception.type_error.302] type must be number, but is string
-[       OK ] FileHandlerTest.InvalidJsonFormat (5 ms)
+[       OK ] FileHandlerTest.InvalidJsonFormat (4 ms)
 [ RUN      ] FileHandlerTest.InvalidCsvFormat
 Invalid value in CSV file: not_a_number
-[       OK ] FileHandlerTest.InvalidCsvFormat (4 ms)
-[----------] 6 tests from FileHandlerTest (38 ms total)
+[       OK ] FileHandlerTest.InvalidCsvFormat (3 ms)
+[----------] 8 tests from FileHandlerTest (32 ms total)
 
 [----------] Global test environment tear-down
-[==========] 6 tests from 1 test suite ran. (42 ms total)
-[  PASSED  ] 6 tests.
+[==========] 8 tests from 1 test suite ran. (34 ms total)
+[  PASSED  ] 8 tests.
 ```
 
 ## Conclusion
